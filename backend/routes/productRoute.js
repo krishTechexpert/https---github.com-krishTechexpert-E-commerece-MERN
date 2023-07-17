@@ -13,7 +13,7 @@ router.route('/admin/product/:id')
 .put(isAuthenticatedUser, authorizeRoles('admin'),updateProduct)
 .delete(isAuthenticatedUser, authorizeRoles('admin'),deleteProduct) // shortend
 
-router.route('/products:/id').get(getProductdetails)
+router.route('/product/:id').get(getProductdetails)
 
 router.route('/product/review').put(isAuthenticatedUser,createProductReview)
 

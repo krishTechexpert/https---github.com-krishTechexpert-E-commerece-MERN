@@ -24,12 +24,20 @@ exports.getAllProducts = catchAsyncError(async(req,res)=> {
     let countProduct = await Product.count();
 
     let apiFeature = new ApiFeatures(Product.find(),req.query)
-    .Search() // option chain
+    .Search()// option chain
     .Filter()
-    .Pagination(resultPerPage)
-    const products = await apiFeature.query;
 
-    res.status(200).json({success:true, countProduct,products,})
+    let products = await apiFeature.query;
+
+    const filteredProductCount=products.length;
+
+    apiFeature.Pagination(resultPerPage);
+    products = await apiFeature.query.clone();
+    
+    //here above we add .clone() to fixed below error
+    //"message": "Query was already executed: Product.find({})"
+
+    res.status(200).json({success:true, countProduct,resultPerPage,filteredProductCount,products,})
 })
 
 // Update product -- Admin

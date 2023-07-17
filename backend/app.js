@@ -1,10 +1,23 @@
 const express = require('express');
 const app= express();
 const  cookieParser = require('cookie-parser')
-
+const cors = require('cors');
 app.use(express.urlencoded({
     extended: true,
 }));
+const corsOpts = {
+    origin: '*',
+  
+    methods: [
+      'GET',
+      'POST',
+    ],
+  
+    allowedHeaders: [
+      'Content-Type',
+    ],
+  };
+  app.use(cors(corsOpts));
 app.use(express.json());
 app.use(cookieParser())
 const errorHandler = require('./middleware/error')

@@ -9,6 +9,7 @@ class ApiFeatures {
     }
 
     Search(){
+
         const keyword = this.queryStr.keyword ? {
             name:{
                 $regex:this.queryStr.keyword,  //find kjlgsamosamosa = samosa
@@ -18,23 +19,22 @@ class ApiFeatures {
 
         //this.query = Product.find().find({...keyword}) used option chaining...
         //same above
-        this.query = this.query.find({...keyword})    //db.products.find( { name: { $regex: /^ABC/i } } )
+        this.query = this.query.find({...keyword})
+        //db.products.find( { name: { $regex: /^ABC/i } } )
         return this;
     }
 
     Filter(){
         const Keyword = {...this.queryStr};
         let removeFields = ['keyword','page','limit'];
-
+        
         removeFields.forEach(key => delete Keyword[key])
-
         //Filter for price and rating
         // we have to add $ with gt and lt such as mongodb lte oprator
         // "price":{"$gte":"4000"}}
 
        let str =  JSON.stringify(Keyword);
            str = str.replace(/\b(gt|gte|lt|lte)\b/g,(key)=> `$${key}`)
-
         this.query = this.query.find(JSON.parse(str))
 
         return this;
@@ -47,7 +47,7 @@ class ApiFeatures {
 
         this.query = this.query.limit(resultPerPage).skip(skip)
 
-        return this
+        return this.query
 
     }
 
