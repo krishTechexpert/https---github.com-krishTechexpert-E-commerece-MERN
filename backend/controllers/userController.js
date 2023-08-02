@@ -4,19 +4,51 @@ const User = require('../models/userModel')
 const sendToken = require("../utills/jwtToken")
 const sendEmail = require("../utills/sendEmail")
 const crypto=require('crypto')
+const cloudinary = require('cloudinary')
 
 // Register user
 
 const registerUser = catchAsyncError(async(req,res,next) => {
-    const {name,email,password} = req.body;
+    const {name,email,password,avatar} = req.body;
+    let myCloud=null;
+    if(avatar){
+         myCloud = await cloudinary.v2.uploader.upload(avatar,{
+            folder: "avatars",
+            width: 150,
+            crop: "scale",
+        });
+        if(!myCloud){
+            return next(new ErrorResponse(400,'something went to wrong'))
+       }
+    }
+        
+  
+    const emailFound = await User.findOne({email})
+    if(emailFound){
+        return next(new ErrorResponse(302,'This email address has already registered with us'))
+    }
+
+    const checkAvatar = avatar ? {
+        public_id:myCloud.public_id,
+        url:myCloud.secure_url
+    } : {
+
+        public_id:null,
+        url:null
+    } 
+    
+
+    console.log("check avatar",checkAvatar)
+
     const user = await User.create({
-        name,email,password,
-        avatar:{
-            public_id:'user profile sample',
-            url:'picurl'
-        }
+        name,email,password,avatar:checkAvatar
+          
     })
+    console.log("new user",user)
+    user.password=null;
     sendToken(user,201,res)
+
+
 })
 
 const loginUser = catchAsyncError(async (req,res,next) => {
@@ -27,7 +59,7 @@ const loginUser = catchAsyncError(async (req,res,next) => {
         return next(new ErrorResponse(401,'please enter email and password'))
     }
 
-    const user = await User.findOne({email}).select("+password")
+    const user = await User.findOne({email}).select("+password") // incluse passcode field when fetch user
     if(!user){
         return next(new ErrorResponse(401,'Invalid email or password'))
     }
@@ -37,6 +69,7 @@ const loginUser = catchAsyncError(async (req,res,next) => {
     if(!isPasswordMatched){
         return next(new ErrorResponse(400,'Invalid email or password'))
     }
+    user.password=null;
     sendToken(user,200,res)
 })
 
@@ -140,15 +173,43 @@ const updatePassword = catchAsyncError(async (req,res,next) => {
 //  update user profile
 const updateUserProfile = catchAsyncError(async (req,res,next) => {
 
-    if(!req.body.name || !req.body.email){
+    const {name,email,avatar}=req.body
+    let myCloud=null;
+    if(avatar){
+        const user = await User.findById(req.user.id)
+        const imageId = user.avatar.public_id;
+        await cloudinary.v2.uploader.destroy(imageId)
+         myCloud = await cloudinary.v2.uploader.upload(avatar,{
+            folder: "avatars",
+            width: 150,
+            crop: "scale",
+        });
+        if(!myCloud){
+            return next(new ErrorResponse(400,'something went to wrong'))
+       }
+    }
+    if(!name || !email){
         return next(new ErrorResponse(401,'please enter name and email'))
     }
 
+
+    const checkAvatar = avatar ? {
+        public_id:myCloud.public_id,
+        url:myCloud.secure_url
+    } : {
+
+        public_id:null,
+        url:null
+    } 
+
     const newUserData = {
-        name:req.body.name,
-        email:req.body.email
+        name,
+        email,
+        avatar:checkAvatar
     }
 
+   
+    // req.user.id = jab token verify ho jata hai toh y id mil ti hai 
     const user = await User.findByIdAndUpdate(req.user.id,newUserData,{
         new:true,
         runValidators:false,
@@ -156,7 +217,8 @@ const updateUserProfile = catchAsyncError(async (req,res,next) => {
     })
     res.status(200).json({
         success:true,
-        message:'user profile has updated successfully'
+        message:'user profile has updated successfully',
+        user
     })
 
 })

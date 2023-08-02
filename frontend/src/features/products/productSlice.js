@@ -1,6 +1,6 @@
 import {createAsyncThunk,createSlice} from '@reduxjs/toolkit';
-import axios from 'axios';
-axios.defaults.baseURL='http://localhost:4000/api/v1';
+import {instance} from "../../config"
+
 
 const initialState = {
     productList:[],
@@ -19,7 +19,7 @@ export const getAllProducts = createAsyncThunk('/api/products',
 
       }
       
-        const response = await axios.get(url)
+        const response = await instance.get(url)
         const {products,countProduct,resultPerPage,filteredProductCount} = response.data
         return {products,countProduct,resultPerPage,filteredProductCount}
     }
@@ -27,7 +27,7 @@ export const getAllProducts = createAsyncThunk('/api/products',
 
 export const getProductDetails = createAsyncThunk('/api/productDetails',
     async (id) => {
-        const response = await axios.get(`/product/${id}`)
+        const response = await instance.get(`/product/${id}`)
         const {product} = response.data
         return {product}
     }

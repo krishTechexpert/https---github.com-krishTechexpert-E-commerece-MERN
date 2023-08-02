@@ -1,23 +1,33 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link,useNavigate } from "react-router-dom";
 import { Menu, X ,Store} from 'lucide-react';
-import Search from "./Search"
+import Search from "./Search";
+import DropDown from "./DropDown";
+import {useSelector} from 'react-redux';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-
+  const {isAuthenticated,user} = useSelector((state) =>state.userData)
+  const navigate = useNavigate()
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
+  const page = window.location.pathname.substring(1) 
+  useEffect(() => {
+    setIsMenuOpen(false)
+  },[navigate])
+  
   return <>
-    <div className="relative w-full bg-white">
+    <div className="relative w-full bg-white shadow">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
-        <div className="inline-flex items-center space-x-2">
+        <div className="inline-flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
           <span>
             <Store />
           </span>
           <span className="font-bold">Big Bazar</span>
         </div>
+        {page !== 'register' && page !== 'login'   ? 
+
         <div className="hidden grow items-start lg:flex">
           <ul className="ml-12 inline-flex space-x-8">
 
@@ -43,22 +53,28 @@ const Header = () => {
             </li>
 
           </ul>
-        </div>
-       <Search />
+        </div>:''}
+       <Search  checkPage = {page === 'register' || page === 'login' ?true:false}/>
+        { !sessionStorage.getItem('token') &&
         <div className="hidden space-x-2 lg:block">
           <button
             type="button"
+            onClick={() => navigate('/register')}
             className="rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-black hover:bg-black/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
           >
-            Sign In
+            Register
           </button>
           <button
             type="button"
+            onClick={() => navigate('/login')}
             className="rounded-md border border-black px-3 py-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
           >
             Log In
           </button>
         </div>
+        }
+         {isAuthenticated && <DropDown name={user?.name} role={user?.role} avatar={user?.avatar} />} 
+
 
         <div className="lg:hidden">
           <Menu onClick={toggleMenu} className="h-6 w-6 cursor-pointer" />
@@ -126,20 +142,30 @@ const Header = () => {
 
                   </nav>
                 </div>
+                {!isAuthenticated && 
                 <div className="mt-2 space-y-2">
                   <button
                     type="button"
+                    onClick={() => navigate('/register')}
                     className="w-full rounded-md border border-black px-3 py-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                   >
-                    Sign In
+                    Register
                   </button>
                   <button
                     type="button"
+                    onClick={() => navigate('/login')}
                     className="w-full rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                   >
                     Log In
                   </button>
                 </div>
+        }
+
+
+
+
+
+
               </div>
             </div>
           </div>

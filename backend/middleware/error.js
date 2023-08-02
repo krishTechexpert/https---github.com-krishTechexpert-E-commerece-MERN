@@ -17,12 +17,7 @@ const errorHandler = (err,req,res,next) => {
         const message = `Resource not found. Invalid: ${err.path}`;
         err=new ErrorResponse(400,message)
     }
-    // mongoose duplicate key error
-    if(err.code === 11000){ // for duplicate value 
-        const message = `Duplicate ${Object.keys(err.keyValue || {})} entered`;
-        err=new ErrorResponse(302,message)
-    }
-    
+       
     // wrong jwt error
     if(err.name === 'JsonWebTokenError'){
         const message = `Json web token is invalid, try again`;
@@ -34,7 +29,6 @@ const errorHandler = (err,req,res,next) => {
         const message = `Json web token is expired, try again`;
         err=new ErrorResponse(400,message)
     }
-
     res.status(err.statusCode).json({
         success:false,
         //message:err.stack  // this stack property comes from Error.captureStackTrace(this,this.constructor)

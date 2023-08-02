@@ -1,7 +1,7 @@
 import React,{Fragment,useEffect,useState} from 'react';
 import {useDispatch,useSelector} from 'react-redux';
 import { getAllProducts } from '../../features/products/productSlice';
-import Loader from '../../components/layout/Loader/Loader';
+import Loader from '../../helper/Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import Product from "../../features/products/Product";
 import { useParams } from 'react-router-dom';
@@ -165,7 +165,8 @@ function AllProducts() {
           </div>
       <div className="h-[400px] w-full  lg:col-span-10 lg:h-full">
     <h1 className='mt-10 px-5 text-3xl  space-y-4 font-bold divide-y divide-dashed'>Products List {totalProducts>0  && !keyword && !price? <span className='text-red-700'>({totalProducts})</span>:<span className='text-red-700'>{filteredProductCount}</span>}</h1>
-      {loading && <Loader />}
+    {loading && <div className='my-20 py-20'><Loader /></div>}
+
       {error && <ToastContainer />}
       <div className="mx-auto  grid w-full max-w-7xl items-center space-y-4 px-2 py-10 pb-16 md:grid-cols-2 md:gap-6 md:space-y-0 lg:grid-cols-4">
         {!loading && !error  && content}

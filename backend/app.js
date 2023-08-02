@@ -1,25 +1,25 @@
 const express = require('express');
 const app= express();
 const  cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
 const cors = require('cors');
+const fileUpload = require('express-fileupload')
+
 app.use(express.urlencoded({
     extended: true,
 }));
+// axios k sath withcredential: true kerna hoga and set below cors option tabi cookies 
+//show hogi inside application cookies
+// and will sent cookie on every request
 const corsOpts = {
-    origin: '*',
-  
-    methods: [
-      'GET',
-      'POST',
-    ],
-  
-    allowedHeaders: [
-      'Content-Type',
-    ],
+  origin: 'http://localhost:3000',
+  credentials: true
   };
   app.use(cors(corsOpts));
 app.use(express.json());
 app.use(cookieParser())
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(fileUpload())
 const errorHandler = require('./middleware/error')
 
 // routes imports 

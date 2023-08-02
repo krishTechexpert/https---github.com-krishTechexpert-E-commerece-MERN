@@ -5,7 +5,7 @@ import { getProductDetails } from '../../../features/products/productSlice';
 
 
 
-function Search() {
+function Search({checkPage}) {
     const[keyword,setKeyword]=useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,9 +29,9 @@ function Search() {
 
 
   return (
-    <form className="flex grow justify-end md:mr-2 lg:mr-4" onSubmit={SubmitSearchProducts}>
+    <form className={`flex grow ${checkPage ? 'justify-center':'justify-end'} md:mr-2 lg:mr-4`} onSubmit={SubmitSearchProducts}>
     <input
-      className="flex h-10 w-[120px] sm:w-[280px]  md:w-[300px] lg:w-[230px] rounded-md bg-gray-100 px-3 py-2  text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+      className={`flex h-10 w-[120px] sm:w-[280px]  md:w-[300px] ${checkPage ? 'lg:w-[400px]' : 'lg:w-[230px]'} rounded-md bg-gray-100 px-3 py-2  text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50`}
       type="text"
       value={keyword}
       placeholder="Search Products"

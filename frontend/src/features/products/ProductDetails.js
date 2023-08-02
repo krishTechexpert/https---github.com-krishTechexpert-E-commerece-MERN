@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import MetaData from '../../components/layout/MetaData';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductDetails } from '../../features/products/productSlice';
-import Loader from '../../components/layout/Loader/Loader';
+import Loader from '../../helper/Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import ReactStars from 'react-stars'
 import Reviews from "./Reviews";
@@ -41,7 +41,7 @@ export const ProductDetails = () => {
   return (
 
     <section className="overflow-hidden">
-      {loading && <Loader  />}
+    {loading && <div className='my-20 py-20'><Loader /></div>}
       {error && <ToastContainer />}
       {singleProduct && 
       <div className="mx-auto max-w-5xl px-5 py-12">
